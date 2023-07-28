@@ -4,3 +4,4 @@ binance.RData
 .Ruserdata
 env_variables.r
 safe.csv
+variables.env.json
