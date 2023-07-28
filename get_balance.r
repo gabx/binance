@@ -4,7 +4,7 @@
 library(binancer)
 binance_credentials(bin_key,bin_secret)
 
-# for clarity, we use mlc <- get_balance()
+# for further use, we run: mlc <- get_balance()
 get_balance <- function () {
     
     library('binancer')
@@ -32,19 +32,11 @@ get_balance <- function () {
     mlc.asset <- mlc.asset[-which(mlc.asset == 'USDT')]
     mlc.asset.usdt <- as.list(paste(mlc.asset, 'USDT', sep = ''))
 
-    return(list(balance = balance, asset.usd = mlc.asset.usdt, asset = mlc.asset))
+    mlc <- list(balance = balance, asset.usdt = mlc.asset.usdt, asset = mlc.asset)
 }
 
-# for clarity, we use open.price <- get_historic()
+# for further use, we run: open.price <- get_historic()
 get_historic <- function() {
-
-    library('binancer')
-    library('rjson')
-    env.var <- fromJSON(file = 'variables.env.json')
-    binance_credentials(env.var[[1]],env.var[[2]])  
-   
-
-    mlc <- get_balance()
 
     #asset.price.tb <- lapply(mlc$asset.usd, function(x, y, z) binance_klines(x,
     #interval = '8h', start_time = '2023-07-17', end_time = '2023-07-21'))
@@ -63,31 +55,33 @@ get_historic <- function() {
     asset.price <- map(asset.price.open, as_tibble)
 }
 
-
 # we must remove row with USDT
 # balance.no.usd <- filter(balance, !asset == 'USDT')
 
-# get a asset/value tibble with open price. 
-# we first get a list of numeric value
-open.price.list <- lapply(open.price, function(x) pull(x,open))
+# for further use, we run: portfolio <- get_portfolio()
+get_portfolio <- function() {
 
-# here we keep last daily value
-open.price.list.last <- open.price.list |> map(c(length(open.price.list[[1]]),1))
-# transform list into tibble
-open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
+    # get a asset/value tibble with open price. 
+    # we first get a list of numeric value
+    open.price.list <- lapply(open.price, function(x) pull(x,open))
+    # here we keep last daily value
+    open.price.list.last <- open.price.list |> map(c(length(open.price.list[[1]]),1))
+    # transform list into tibble
+    open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
 
 
-# create final tibble
-balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
-balance.final <- rename(balance.final, 'amount' = total)
-balance.final <- mutate(balance.final, 'total' = amount * value)
+    # create final tibble
+    balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
+    balance.final <- rename(balance.final, 'amount' = total)
+    balance.final <- mutate(balance.final, 'total' = amount * value)
 
-## add a weight column
-sum.asset <- sum(balance.final %>% pull(total))
-balance <- mutate(balance.final, weight = total / sum.asset)
-balance <- mutate(balance, weight = round(weight * 100, digits = 2))
-
-return(balance)
-
+    ## add a weight column
+    sum.asset <- sum(balance.final %>% pull(total))
+    balance <- mutate(balance.final, weight = total / sum.asset)
+    balance <- mutate(balance, weight = round(weight * 100, digits = 2))
+    
+    # order by weight
+    balance <- arrange(balance, desc(weight))
+}
 
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
