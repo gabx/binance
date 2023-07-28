@@ -68,21 +68,24 @@ get_historic <- function() {
 # balance.no.usd <- filter(balance, !asset == 'USDT')
 
 # get a asset/value tibble with open price. 
-open.price.list <- lapply(open.price, function(x) pull(x,open_time, open))
+# we first get a list of numeric value
+open.price.list <- lapply(open.price, function(x) pull(x,open))
 
-open.price.list <- open.price.list |> map(c(length(open.price.list[[1]]),1))
+# here we keep last daily value
+open.price.list.last <- open.price.list |> map(c(length(open.price.list[[1]]),1))
 # transform list into tibble
-open.price <- open.price.list %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
+open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
+
 
 # create final tibble
-balance.final <- inner_join(balance.no.usd, open.price, by = 'asset')
+balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
 balance.final <- rename(balance.final, 'amount' = total)
 balance.final <- mutate(balance.final, 'total' = amount * value)
 
 ## add a weight column
-sum.asset <- sum(balance %>% pull(total))
-balance1 <- mutate(balance, weight = total / sum.asset)
-balance1 <- mutate(balance1, weight = round(weight * 100, digits = 2))
+sum.asset <- sum(balance.final %>% pull(total))
+balance <- mutate(balance.final, weight = total / sum.asset)
+balance <- mutate(balance, weight = round(weight * 100, digits = 2))
 
 return(balance)
 
