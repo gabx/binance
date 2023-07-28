@@ -82,6 +82,8 @@ get_portfolio <- function() {
     
     # order by weight
     balance <- arrange(balance, desc(weight))
+    # round numbers
+    balance <-  mutate(balance, amount = round(amount, 2), value = round(amount, 2), total = round(total, 2))
 }
 
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
