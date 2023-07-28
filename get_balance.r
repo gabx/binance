@@ -4,6 +4,7 @@
 library(binancer)
 binance_credentials(bin_key,bin_secret)
 
+# for clarity, we use mlc <- get_balance()
 get_balance <- function () {
     
     library('binancer')
@@ -29,15 +30,19 @@ get_balance <- function () {
     mlc.asset <- as.list(balance$asset)
 # remove USDT form our assets & add USDT to each asset
     mlc.asset <- mlc.asset[-which(mlc.asset == 'USDT')]
-    mlc.asset.usd <- as.list(paste(mlc.asset, 'USDT', sep = ''))
+    mlc.asset.usdt <- as.list(paste(mlc.asset, 'USDT', sep = ''))
 
     return(list(balance = balance, asset.usd = mlc.asset.usdt, asset = mlc.asset))
 }
 
+# for clarity, we use open.price <- get_historic()
 get_historic <- function() {
 
-    library(binancer)
-    binance_credentials(bin_key,bin_secret)    
+    library('binancer')
+    library('rjson')
+    env.var <- fromJSON(file = 'variables.env.json')
+    binance_credentials(env.var[[1]],env.var[[2]])  
+   
 
     mlc <- get_balance()
 
@@ -62,9 +67,9 @@ get_historic <- function() {
 # we must remove row with USDT
 # balance.no.usd <- filter(balance, !asset == 'USDT')
 
-# get a asset/value tibble with open price
-open.price.list <- lapply(open.price.tb, function(x) pull(x,open))
-names(open.price.list) <- mlc.asset
+# get a asset/value tibble with open price. 
+open.price.list <- lapply(open.price, function(x) pull(x,open_time, open))
+
 open.price.list <- open.price.list |> map(c(length(open.price.list[[1]]),1))
 # transform list into tibble
 open.price <- open.price.list %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
