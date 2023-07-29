@@ -10,9 +10,10 @@ open.price <- get_historic()
 portfolio <- get_portfolio()
 
 # rename portfolio with today date
-today_date <- format(Sys.Date(), "%Y%m%d")
-new_name <- paste0('portfolio_', today_date)
+yesterday_date <- format(Sys.Date()-1, "%Y%m%d")
+new_name <- paste0('portfolio_', yesterady_date)
 # save it in a new env
+# list new env data: ls(envir = .PortfolioEnv) or ls.str(.PortfolioEnv)
 .PortfolioEnv <- new.env()
 assign(new_name, portfolio, envir = .PortfolioEnv)
 
