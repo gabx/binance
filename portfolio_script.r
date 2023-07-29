@@ -1,8 +1,10 @@
 # get MLC portfolio balance
 # git URL: https://github.com/gabx/binance.git
 
-library(binancer)
-binance_credentials(bin_key,bin_secret)
+source('get_balance.r')
+source('get_historic.r')
+source('get_portfolio.r')
+
 
 # for further use, we run: mlc <- get_balance()
 get_balance <- function () {
