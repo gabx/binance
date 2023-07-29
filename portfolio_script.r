@@ -5,6 +5,10 @@ source('get_balance.r')
 source('get_historic.r')
 source('get_portfolio.r')
 
+mlc <- get_balance()
+open.price <- get_historic()
+portfolio <- get_portfolio()
+
 
 # for further use, we run: mlc <- get_balance()
 get_balance <- function () {
