@@ -34,6 +34,16 @@ get_portfolio <- function() {
     balance <- arrange(balance, desc(weight))
     # round numbers
     balance <-  mutate(balance, amount = round(amount, 2), value = round(value, 2), total = round(total, 2))
+    # rename portfolio with yesterday date
+    yesterday_date <- gsub('-', '', end_time)
+    new_name <- paste0('portfolio_', yesterday_date)
+    # save it in a new env
+    # list new env data: ls(envir = .PortfolioEnv) or ls.str(.PortfolioEnv)
+    # rm(list = 'portfolio_20230727', envir = .PortfolioEnv)
+    # get(ls(envir = .PortfolioEnv, pattern = '27'))
+    # .PortfolioEnv <- new.env()
+    assign(new_name, balance, envir = .PortfolioEnv)
+    assign(new_name, balance, envir = .GlobalEnv)
     return(balance)
 }
 
