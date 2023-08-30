@@ -14,8 +14,17 @@ get_portfolio <- function() {
     # get a asset/value tibble with open price. 
     # we first get a list of numeric value
     open.price.list <- lapply(open.price, function(x) pull(x,open))
+    
     # here we keep last daily value
-    open.price.list.last <- open.price.list |> map(c(length(open.price.list[[1]]),1))
+    # Function to get the last element of a list
+    get_last_element <- function(x) {
+        if (length(x) > 0) {
+            return(x[length(x)])
+        } else {
+            return(NA)
+        }
+    }
+    open.price.list.last <- map_dbl(open.price.list, get_last_element)
     # transform list into tibble
     open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
 
@@ -33,15 +42,13 @@ get_portfolio <- function() {
     # order by weight
     balance <- arrange(balance, desc(weight))
     # round numbers
-    balance <-  mutate(balance, amount = round(amount, 2), value = round(value, 2), total = round(total, 2))
+    # balance <-  mutate(balance, amount = round(amount, 2), value = round(value, 2), total = round(total, 2))
     # rename portfolio with yesterday date
     yesterday_date <- gsub('-', '', end_time)
     new_name <- paste0('portfolio_', yesterday_date)
     # save it in a new env
     # list new env data: ls(envir = .PortfolioEnv) or ls.str(.PortfolioEnv)
-    # rm(list = 'portfolio_20230727', envir = .PortfolioEnv)
     # get(ls(envir = .PortfolioEnv, pattern = '27'))
-    # .PortfolioEnv <- new.env()
     assign(new_name, balance, envir = .PortfolioEnv)
     assign(new_name, balance, envir = .GlobalEnv)
     return(balance)
