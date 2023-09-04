@@ -30,7 +30,7 @@ last.30.quote <- lapply(open.price.list, function(l) last_quote(l, 29))
 last.90.quote <- lapply(open.price.list, function(l) last_quote(l, 89))
 
 last7q <- test %>%
-    mutate(Quotes = map(Quotes, extract_first_last)
+    mutate(Quotes = map(Quotes, extract_first_last))
 
  return_percentage <- function(x,y){
     (y - x) / x * 100
