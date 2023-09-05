@@ -8,6 +8,7 @@ source('get_portfolio.r')
 # create a new env to save our data
 .PortfolioEnv <- new.env()
 
+## START OF THE WHOLE SCRIPT ##
 # set the dates
 start_time  <- format(Sys.Date()-2, "%Y-%m-%d")
 end_time <- format(Sys.Date()-1, "%Y-%m-%d")
@@ -22,8 +23,8 @@ portfolio <- get_portfolio()
 
 # export to pdf
 library(gridExtra)
-pdf('portoflio_20230728.pdf')
-grid.table(portfolio_20230728)
+pdf('portoflio_20230831.pdf')
+grid.table(portfolio)
 dev.off()
 
 
