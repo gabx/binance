@@ -1,8 +1,9 @@
 # get portfolio stats on 7, 30 and 90 days
 
 # we start with our list of tb open.price.list
+open.price.list <- lapply(open.price, function(x) pull(x,open))
 
-# function to return the quote depending of the day, noted d
+# function to return the quotes depending of the day, noted d
 last_quote <- function(l,d){
     # we print NA if day number is > at historical quotes
     if (d > length(l)) {
@@ -23,11 +24,7 @@ extract_first_last <- function(x) {
 
 
 # we will first work with lists
-# !! We must include a test returning NA if historic quotes are not long enough
 lasd <- lapply(open.price.list, function(l) last_quote(l, 0))
-
-
-
 
 
 # 7 days
@@ -64,12 +61,8 @@ rate_of_return <- left_join(rate_of_return1, last90d.return, by = 'Assets')
 # change col names
 rate_of_return <- rate_of_return %>% rename(Return.7day = RoR.x, Return.30days = RoR.y, Return.90days = RoR)
 
-return_percentage <- function(x,y){
-    (y - x) / x * 100
-}
- 
-# volatility
-# 1 get daily returns or
-# get log returns with asset prices diff(log(asset_prices))
 
-# 2 get standard deviation sd()
+
+
+ 
+
