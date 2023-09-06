@@ -4,6 +4,7 @@
 source('get_balance.r')
 source('get_historic.r')
 source('get_portfolio.r')
+source('get_return.r')
 
 # create a new env to save our data
 .PortfolioEnv <- new.env()
@@ -13,15 +14,15 @@ source('get_portfolio.r')
 mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
-
+portolio.analysis <- get_return()
 
 # ! HINT !
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
 
 # export to pdf
 library(gridExtra)
-pdf('portoflio_20230831.pdf')
-grid.table(portfolio)
+pdf('portoflio.pdf')
+grid.table(test)
 dev.off()
 
 
