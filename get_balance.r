@@ -25,9 +25,9 @@ get_balance <- function () {
 
     mlc.asset <- as.list(balance$asset)
 # remove USDT form our assets & add USDT to each asset name
-    # mlc.asset <- mlc.asset[-which(mlc.asset == 'USDT')]
+    mlc.asset <- mlc.asset[-which(mlc.asset == 'USDT')]
     mlc.asset.usdt <- as.list(paste(mlc.asset, 'USDT', sep = ''))
-    mlc.asset.usdt <- mlc.asset.usdt[-which(mlc.asset.usdt == 'USDTUSDT')]
+    # mlc.asset.usdt <- mlc.asset.usdt[-which(mlc.asset.usdt == 'USDTUSDT')]
 
     mlc <- list(balance = balance, asset.usdt = mlc.asset.usdt, asset = mlc.asset)
     return(mlc)

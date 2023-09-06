@@ -1,5 +1,6 @@
 # get portfolio stats on 7, 30 and 90 days
 
+get_return <- function() {
 # we start with our list of tb open.price.list
 open.price.list <- lapply(open.price, function(x) pull(x,open))
 
@@ -66,5 +67,6 @@ return(rate_of_return)
 
 # ! Missing is adding a line with our USDT
 
+}
  
 

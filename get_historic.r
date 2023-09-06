@@ -15,7 +15,7 @@ get_historic <- function() {
     }
 
     asset.price.open <- lapply(asset.price.list, keep_daily_open)
-    names(asset.price.open) <- mlc$asset.usdt
+    names(asset.price.open) <- mlc$asset
     # final list of df with open_time, open and symbol columns
     asset.price.open <- map(asset.price.open, ~select(.x, 1, 2, 12))
     # change df into tibbles

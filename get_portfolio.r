@@ -26,7 +26,7 @@ get_portfolio <- function() {
     open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
 
     # create final tibble
-    mlc$balance <- mlc$balance %>% mutate(asset = paste(asset, 'USDT', sep = ''))
+    # mlc$balance <- mlc$balance %>% mutate(asset = paste(asset, 'USDT', sep = ''))
     balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
     balance.final <- rename(balance.final, 'amount' = total)
     balance.final <- mutate(balance.final, 'total' = amount * value)
