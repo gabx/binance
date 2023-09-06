@@ -58,11 +58,13 @@ last90d.return$RoR <- unlist(last90d.return$RoR)
 rate_of_return1 <- left_join(last7d.return, last30d.return, by = 'asset')
 rate_of_return <- left_join(rate_of_return1, last90d.return, by = 'asset')
 
-# change col names
+# join with our portfolio
+rate_of_return <- left_join(portfolio, rate_of_return, by = 'asset')
 rate_of_return <- rate_of_return %>% rename(Return.7day = RoR.x, Return.30days = RoR.y, Return.90days = RoR)
+rate_of_return <- rate_of_return %>% mutate(total = round(total, digits = 2))
+return(rate_of_return)
 
-
-
+# ! Missing is adding a line with our USDT
 
  
 
