@@ -5,11 +5,8 @@
 # for further use, we run: portfolio <- get_portfolio()
 get_portfolio <- function() {
 
-    library('binancer')
-    library('rjson')
-    
-    env.var <- fromJSON(file = 'variables.env.json')
-    binance_credentials(env.var[[1]],env.var[[2]])  
+    start_time  <- format(Sys.Date()-2, "%Y-%m-%d")
+    end_time <- format(Sys.Date()-1, "%Y-%m-%d")
     
     # get a asset/value tibble with open price. 
     # we first get a list of numeric value
@@ -28,8 +25,8 @@ get_portfolio <- function() {
     # transform list into tibble
     open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
 
-
     # create final tibble
+    mlc$balance <- mlc$balance %>% mutate(asset = paste(asset, 'USDT', sep = ''))
     balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
     balance.final <- rename(balance.final, 'amount' = total)
     balance.final <- mutate(balance.final, 'total' = amount * value)
