@@ -33,7 +33,7 @@ last7d.first.last <- lapply(last7d, function(x) extract_first_last(x))
 last7d.return <- map(last7d.first.last, ~ ((.x[2] - .x[1]) / .x[1]) *100)
 last7d.return <- lapply(last7d.return, function(x) round(x, digits = 2))
 # transform the list in a tibble
-last7d.return <- enframe(last7d.return, name = 'Assets', value = 'RoR')
+last7d.return <- enframe(last7d.return, name = 'asset', value = 'RoR')
 # change the numeric column class
 last7d.return$RoR <- unlist(last7d.return$RoR)
 
@@ -43,7 +43,7 @@ last30d <- lapply(open.price.list, function(l) last_quote(l, 30))
 last30d.first.last <- lapply(last30d, function(x) extract_first_last(x))
 last30d.return <- map(last30d.first.last, ~ ((.x[2] - .x[1]) / .x[1]) *100)
 last30d.return <- lapply(last30d.return, function(x) round(x, digits = 2))
-last30d.return <- enframe(last30d.return, name = 'Assets', value = 'RoR')
+last30d.return <- enframe(last30d.return, name = 'asset', value = 'RoR')
 last30d.return$RoR <- unlist(last30d.return$RoR)
 
 # 90 days
@@ -51,12 +51,12 @@ last90d <- lapply(open.price.list, function(l) last_quote(l, 90))
 last90d.first.last <- lapply(last90d, function(x) extract_first_last(x))
 last90d.return <- map(last90d.first.last, ~ ((.x[2] - .x[1]) / .x[1]) *100)
 last90d.return <- lapply(last90d.return, function(x) round(x, digits = 2))
-last90d.return <- enframe(last90d.return, name = 'Assets', value = 'RoR')
+last90d.return <- enframe(last90d.return, name = 'asset', value = 'RoR')
 last90d.return$RoR <- unlist(last90d.return$RoR)
 
 # join the three tibbles
-rate_of_return1 <- left_join(last7d.return, last30d.return, by = 'Assets')
-rate_of_return <- left_join(rate_of_return1, last90d.return, by = 'Assets')
+rate_of_return1 <- left_join(last7d.return, last30d.return, by = 'asset')
+rate_of_return <- left_join(rate_of_return1, last90d.return, by = 'asset')
 
 # change col names
 rate_of_return <- rate_of_return %>% rename(Return.7day = RoR.x, Return.30days = RoR.y, Return.90days = RoR)
