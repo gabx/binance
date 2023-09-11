@@ -7,3 +7,4 @@ safe.csv
 variables.env.json
 .RData
 *.pdf
+*.html
