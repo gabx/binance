@@ -14,11 +14,15 @@ source('get_return.r')
 mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
-portolio.analysis <- get_return()
+mlc_portfolio <- get_return()
 
 # ! HINT !
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
 
+# nice view and print to html or pdf
+library(insight)
+export_table(mlc_portfolio, format = 'html')
+# portfolio.analysis.print <- format_table(portfolio.analysis)
 # export to pdf
 library(gridExtra)
 pdf('portoflio.pdf')
