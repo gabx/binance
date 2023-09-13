@@ -22,6 +22,7 @@ mlc_portfolio <- get_return()
 # nice view and print to html or pdf
 library(insight)
 export_table(mlc_portfolio, format = 'html')
+
 # portfolio.analysis.print <- format_table(portfolio.analysis)
 # export to pdf
 library(gridExtra)
@@ -30,13 +31,20 @@ grid.table(test)
 dev.off()
 
 # ggplot
-library(ggthemes)
-ggplot(data = mlc_portfolio, mapping = aes(x = Vol.90days, y = Return.90days)) + geom_point(mapping = aes(color = asset)) +
-    geom_smooth(method = 'lm') +
-    labs(title = 'MLC portfolio return against volatility',
-         x = 'Daily volatility', y = '90 day rate of return',
-         color = 'asset') +
-    scale_color_colorblind()
+# library(ggthemes)
+ggplot(mlc_portfolio, aes(x = Vol.90days, y = Return.90days)) +
+    geom_point(aes(color = asset), size = 2.5) +
+    labs(title = 'Portfolio simulation',
+         x = 'volatility', y = 'return') +
+    geom_smooth(method = 'lm', se = FALSE) +
+    scale_color_manual(values = my.color[1:length(mlc_portfolio$asset)])
+
+# ggplot(data = mlc_portfolio, mapping = aes(x = Vol.90days, y = Return.90days)) + geom_point(mapping = aes(color = asset)) +
+#     geom_smooth(method = 'lm') +
+#     labs(title = 'MLC portfolio return against volatility',
+#          x = 'Daily volatility', y = '90 day rate of return',
+#          color = 'asset') +
+#     scale_color_colorblind()
     
     
 
