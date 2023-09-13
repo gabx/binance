@@ -44,14 +44,20 @@ vol_ror <- left_join(return, volat, by = 'asset')
 # display.brewer.all(colorblindFriendly = TRUE)
 colourCount = length(vol_ror$asset)
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
-my.color <- rainbow(26)
+my.color <- c('#EE8EBF','#0F4432','#2E946F','#78C66E','#3D5D78','#D58C50','#25DDBF',
+              '#CB88B1','#5B5070','#AA5A74','#8790C1','#54ADD1','#A578A7','#87A04F',
+              '#078989','#52A98B','#6AF2A5','#B89B44','#DF8052','#BB77A5','#22DFEA',
+              '#E4F261','#F07A8E','#AEA33C','#874339','#93D383','#A3C455','#617197',
+              '#092129','#C1CD51','#C0E463')
+
+
 
 ggplot(vol_ror, aes(x = Volatility, y = Return)) +
     geom_point(aes(color = asset)) +
     labs(title = 'Portfolio simulation',
-         x = 'Daily volatility', y = '365 day rate of return') +
-    geom_smooth(method = 'lm') 
-
+         x = 'Volatility', y = '365 day rate of return') +
+    geom_smooth(method = 'lm', se = FALSE) +
+    scale_color_manual(values = my.color[1:length(vol_ror$asset)])
 
 
 #### TEST ###
@@ -64,8 +70,7 @@ ggplot(data = vol_ror, mapping = aes(x = Volatility, y = Return)) + geom_point(m
 
 
 
-#2D212D,#312734,#352D3B,#373343,#3A3A4A,#3B4051,#3D4759,#3D4E5F,#3D5666,#3D5D6C,#3D6572,#3C6C77,#3C747C,#3C7B80,#3D8383,#3F8B86,#419288,#469A89,#4BA18A,#52A98B,#5AB08A,
-#64B78A,#6EBF88,#7AC587,#86CC85,#93D383,#A1D981,#B0DF7F,#BFE57D,#CFEB7C,#E0F07B
+
 
 ggplot(data = vol_ror, mapping = aes(x = Volatility, y = Return)) + 
     geom_point(aes(color = asset)) +
