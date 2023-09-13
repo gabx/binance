@@ -3,8 +3,9 @@
 binance.RData
 .Ruserdata
 env_variables.r
-safe.csv
+*.csv
 variables.env.json
 .RData
 *.pdf
 *.html
+*.png
