@@ -74,11 +74,11 @@ rate_of_return <- rate_of_return %>% rename(Return.7day = RoR.x, Return.30days =
 rate_of_return <- rate_of_return %>% mutate(total = round(total, digits = 2))
 # join with the volatility
 my_portfolio1 <- left_join(rate_of_return, volat30d, by = 'asset')
-my_portfolio <- left_join(my_portfolio1, volat90d, by = 'asset')
-my_portfolio <- my_portfolio %>% rename(Vol.30days = Vol.x, Vol.90days = Vol.y)
+mlc_portfolio <- left_join(my_portfolio1, volat90d, by = 'asset')
+mlc_portfolio <- mlc_portfolio %>% rename(Vol.30days = Vol.x, Vol.90days = Vol.y)
 
 
-return(my_portfolio)
+# return(my_portfolio)
 
 # ! Missing is adding a line with our USDT
 }
