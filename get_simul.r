@@ -21,19 +21,29 @@ extract_first_last <- function(x) {
     }
 }
 
-# returns
+# annualized return 
+# ((ending_value / beginning_value) ^ (1 / number_of_years) - 1) * 100
+
+# annualized returns
 close.first.last <- lapply(close.price, function(x) extract_first_last(x))
-return <- map(close.first.last, ~ ((.x[2] - .x[1]) / .x[1]) *100)
+return <- map(close.first.last, ~ ((.x[2] / .x[1]) -1) *100)
 return <- lapply(return, function(x) round(x, digits = 2))
 names(return) <- portfolio.simul$asset
 return <- enframe(return, name = 'asset', value = 'Return')
 return$Return <- unlist(return$Return)
 
-# volatility
-log_returns <- lapply(close.price, function(x) diff(log(x)))
-volat <- lapply(log_returns, function(x) round(sd(x) * 100, digits = 2))
-names(volat) <- portfolio.simul$asset
-volat <- enframe(volat, name = 'asset', value = 'Volatility')
+# annualized volatility
+# log_returns <- lapply(close.price, function(x) diff(log(x)))
+# volat <- lapply(log_returns, function(x) round(sd(x) * 100, digits = 2))
+# names(volat) <- portfolio.simul$asset
+# volat <- enframe(volat, name = 'asset', value = 'Volatility')
+# volat$Volatility <- unlist(volat$Volatility)
+
+daily_returns <- lapply(close.price, function(x) diff(x)/lag(x))
+mean_returns <- lapply(daily_returns, function(x) mean(x, na.rm = TRUE))
+my_vol <- lapply(daily_returns, function(x) round((sd(x, na.rm = TRUE) * sqrt(365) * 100), digits = 2))
+names(my_vol) <- portfolio.simul$asset
+volat <- enframe(my_vol, name = 'asset', value = 'Volatility')
 volat$Volatility <- unlist(volat$Volatility)
 
 # join
@@ -44,24 +54,25 @@ vol_ror <- left_join(return, volat, by = 'asset')
 # display.brewer.all(colorblindFriendly = TRUE)
 colourCount = length(vol_ror$asset)
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
-my.color <- c('#EE8EBF','#0F4432','#2E946F','#78C66E','#3D5D78','#D58C50','#25DDBF',
-              '#CB88B1','#5B5070','#AA5A74','#8790C1','#54ADD1','#A578A7','#87A04F',
-              '#078989','#52A98B','#6AF2A5','#B89B44','#DF8052','#BB77A5','#22DFEA',
-              '#E4F261','#F07A8E','#AEA33C','#874339','#93D383','#A3C455','#617197',
-              '#092129','#C1CD51','#C0E463')
+my.color <- c('#EE8EBF','#25801f','#2E946F','#78C66E','#3D5D78','#D58C50',
+              '#CB88B1','#5B5070','#AA5A74','#8790C1','#54ADD1','#edc161',
+              '#078989','#52A98B','#6AF2A5','#B89B44','#DF8052','#BB77A5',
+              '#E4F261','#9c44cf','#AEA33C','#874339','#93D383','#A3C455',
+              '#092129','#C1CD51','#C0E463','#87A04F','#22DFEA','#617197')
 
 
 
 ggplot(vol_ror, aes(x = Volatility, y = Return)) +
-    geom_point(aes(color = asset)) +
+    geom_point(aes(color = asset), size = 2.5) +
     labs(title = 'Portfolio simulation',
-         x = 'Volatility', y = '365 day rate of return') +
+         x = 'Annualized volatility', y = 'Annualized return') +
     geom_smooth(method = 'lm', se = FALSE) +
     scale_color_manual(values = my.color[1:length(vol_ror$asset)])
 
 
 #### TEST ###
-ggplot(data = vol_ror, mapping = aes(x = Volatility, y = Return)) + geom_point(mapping = aes(color = asset)) +
+ggplot(data = vol_ror, mapping = aes(x = Volatility, y = Return)) + 
+    geom_point(mapping = aes(color = asset), size = 3) +
     geom_smooth(method = 'lm') +
     labs(title = 'Volatility vs Return',
          x = 'Volatility', y = '365 day rate of return',
