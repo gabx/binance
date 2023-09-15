@@ -20,5 +20,4 @@ get_historic <- function() {
     asset.price.open <- map(asset.price.open, ~select(.x, 1, 2, 12))
     # change df into tibbles
     open.price <- map(asset.price.open, as_tibble)
-    return(open.price)
 }
