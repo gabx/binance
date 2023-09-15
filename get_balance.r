@@ -11,7 +11,7 @@ get_balance <- function () {
 
 # get binance balance without zero
     bin.balance <- as_tibble(binance_balances())
-    bin.balance <- filter(bin.balance, bin.balance$free != 0 | bin.balance$locked != 0)
+    bin.balance <- filter(bin.balance, bin.balance$total != 0)
     bin.balance <- select(bin.balance, -c(free, locked))
     bin.balance <- arrange(bin.balance, asset)
     bin.balance <- filter(bin.balance, !(asset %in% c('ETWH', 'LUNA', 'USDC', 'XRP', 'ETHW')))
