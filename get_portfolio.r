@@ -26,8 +26,9 @@ get_portfolio <- function() {
     open.price.list.last <- open.price.list.last %>% map_dfr(~ .x %>% as_tibble(), .id = 'asset')
 
     # create final tibble
-    # mlc$balance <- mlc$balance %>% mutate(asset = paste(asset, 'USDT', sep = ''))
-    balance.final <- inner_join(mlc$balance, open.price.list.last, by = 'asset')
+    # we keep USDT row and replace NA by 1 when joining for value of USDT
+    balance.final <- left_join(mlc$balance, open.price.list.last, by = 'asset') %>%
+        replace_na(list(value = 1))
     balance.final <- rename(balance.final, 'amount' = total)
     balance.final <- mutate(balance.final, 'total' = amount * value)
 
@@ -39,7 +40,7 @@ get_portfolio <- function() {
     # order by weight
     balance <- arrange(balance, desc(weight))
     # round numbers
-    # balance <-  mutate(balance, amount = round(amount, 2), value = round(value, 2), total = round(total, 2))
+    balance <-  mutate(balance, total = round(total, 2))
     # rename portfolio with yesterday date
     yesterday_date <- gsub('-', '', end_time)
     new_name <- paste0('portfolio_', yesterday_date)
@@ -48,7 +49,6 @@ get_portfolio <- function() {
     # get(ls(envir = .PortfolioEnv, pattern = '27'))
     assign(new_name, balance, envir = .PortfolioEnv)
     assign(new_name, balance, envir = .GlobalEnv)
-    return(balance)
 }
 
 
