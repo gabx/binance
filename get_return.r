@@ -76,11 +76,6 @@ rate_of_return <- rate_of_return %>% mutate(total = round(total, digits = 2))
 my_portfolio1 <- left_join(rate_of_return, volat30d, by = 'asset')
 mlc_portfolio <- left_join(my_portfolio1, volat90d, by = 'asset')
 mlc_portfolio <- mlc_portfolio %>% rename(Vol.30days = Vol.x, Vol.90days = Vol.y)
-
-
-# return(my_portfolio)
-
-# ! Missing is adding a line with our USDT
 }
  
 
