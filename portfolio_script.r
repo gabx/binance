@@ -5,6 +5,7 @@ source('get_balance.r')
 source('get_historic.r')
 source('get_portfolio.r')
 source('get_return.r')
+source('get_volror.r')
 
 # create a new env to save our data
 .PortfolioEnv <- new.env()
@@ -15,6 +16,7 @@ mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
+vol_ror <- get_volror()
 
 # ! HINT !
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
@@ -30,6 +32,21 @@ pdf('portoflio.pdf')
 grid.table(test)
 dev.off()
 
+my.color <- c('#EE8EBF','#25801f','#f73905','#78C66E','#3D5D78','#D58C50',
+              '#b80909','#22DFEA','#AA5A74','#8790C1','#54ADD1','#edc161',
+              '#078989','#E4F261','#6AF2A5','#B89B44','#DF8052','#BB77A5',
+              '#3722d6','#9c44cf','#617197','#874339','#52A98B','#A3C455',
+              '#CB88B1','#C1CD51','#C0E463','#87A04F','#5B5070','#AEA33C')
+
+ggplot(vol_ror, aes(x = Volatility, y = Return)) +
+    geom_point(aes(color = asset), size = 3) +
+    labs(title = 'Portfolio simulation',
+         x = 'Annualized volatility', y = 'Annualized return') +
+    geom_smooth(method = 'lm', se = FALSE) +
+    scale_color_manual(values = my.color[1:length(vol_ror$asset)])
+
+
+
 # ggplot
 # library(ggthemes)
 ggplot(mlc_portfolio, aes(x = Vol.90days, y = Return.90days)) +
@@ -38,6 +55,11 @@ ggplot(mlc_portfolio, aes(x = Vol.90days, y = Return.90days)) +
          x = 'volatility', y = 'return') +
     geom_smooth(method = 'lm', se = FALSE) +
     scale_color_manual(values = my.color[1:length(mlc_portfolio$asset)])
+
+# plot
+# library(RColorBrewer)
+# display.brewer.all(colorblindFriendly = TRUE)
+# getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 
 # ggplot(data = mlc_portfolio, mapping = aes(x = Vol.90days, y = Return.90days)) + geom_point(mapping = aes(color = asset)) +
 #     geom_smooth(method = 'lm') +
