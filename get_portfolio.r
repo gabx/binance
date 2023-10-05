@@ -5,7 +5,7 @@
 # for further use, we run: portfolio <- get_portfolio()
 get_portfolio <- function() {
 
-    start_time  <- format(Sys.Date()-2, "%Y-%m-%d")
+    # start_time  <- format(Sys.Date()-2, "%Y-%m-%d")
     end_time <- format(Sys.Date()-1, "%Y-%m-%d")
     
     # get a asset/value tibble with open price. 
