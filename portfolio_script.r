@@ -10,20 +10,24 @@ source('get_volror.r')
 # create a new env to save our data
 .PortfolioEnv <- new.env()
 
-## START OF THE WHOLE SCRIPT ##
-
+## START OF THE WHOLE SCRIPT FOR WEEKLY PORTFOLIO ##
 mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
+# nice view and print to html or pdf
+insight::export_table(mlc_portfolio, format = 'html')
+## END ##
+
 vol_ror <- get_volror()
 
 # ! HINT !
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
+# to convert nested lists to dataframe, we can use do.call() functions 
+# column and row-wise. as.data.frame() is also used to convert nested lists to a dataframe
 
-# nice view and print to html or pdf
-library(insight)
-export_table(mlc_portfolio, format = 'html')
+# to compute since 2023-01-01, use Sys.Date() - as.Date('2023-01-01') 
+
 
 # portfolio.analysis.print <- format_table(portfolio.analysis)
 # export to pdf
@@ -33,10 +37,10 @@ grid.table(test)
 dev.off()
 
 my.color <- c('#EE8EBF','#25801f','#f73905','#78C66E','#3D5D78','#D58C50',
-              '#b80909','#22DFEA','#AA5A74','#8790C1','#54ADD1','#edc161',
-              '#078989','#E4F261','#6AF2A5','#B89B44','#DF8052','#BB77A5',
-              '#3722d6','#9c44cf','#617197','#874339','#52A98B','#A3C455',
-              '#CB88B1','#C1CD51','#C0E463','#87A04F','#5B5070','#AEA33C')
+              '#748565','#22DFEA','#AA5A74','#8790C1','#54ADD1','#edc161',
+              '#3722d6','#E4F261','#6AF2A5','#B89B44','#DF8052','#BB77A5',
+              '#078989','#9c44cf','#C0E463','#874339','#52A98B','#A3C455',
+              '#CB88B1','#C1CD51','#617197','#87A04F','#5B5070','#AEA33C')
 
 ggplot(vol_ror, aes(x = Volatility, y = Return)) +
     geom_point(aes(color = asset), size = 3) +
@@ -44,6 +48,7 @@ ggplot(vol_ror, aes(x = Volatility, y = Return)) +
          x = 'Annualized volatility', y = 'Annualized return') +
     geom_smooth(method = 'lm', se = FALSE) +
     scale_color_manual(values = my.color[1:length(vol_ror$asset)])
+
 
 
 
@@ -56,17 +61,7 @@ ggplot(mlc_portfolio, aes(x = Vol.90days, y = Return.90days)) +
     geom_smooth(method = 'lm', se = FALSE) +
     scale_color_manual(values = my.color[1:length(mlc_portfolio$asset)])
 
-# plot
-# library(RColorBrewer)
-# display.brewer.all(colorblindFriendly = TRUE)
-# getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 
-# ggplot(data = mlc_portfolio, mapping = aes(x = Vol.90days, y = Return.90days)) + geom_point(mapping = aes(color = asset)) +
-#     geom_smooth(method = 'lm') +
-#     labs(title = 'MLC portfolio return against volatility',
-#          x = 'Daily volatility', y = '90 day rate of return',
-#          color = 'asset') +
-#     scale_color_colorblind()
     
     
 
