@@ -1,4 +1,5 @@
 # get portfolio stats on 7, 30 and 90 days
+# one way to get return with daily close: 100 * diff(log(daily.close))
 
 get_return <- function() {
 # we start with our list of tb open.price.list
