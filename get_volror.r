@@ -1,13 +1,14 @@
 # return a plot with return/volatility 
 
-get_volror <- function(){
+get_volror <- function(int){
     
+    # x is a number of days
     portfolio.simul <- read_csv("simul1.csv", col_names = 'asset', show_col_types = FALSE)
     portfolio.simul.usd <- portfolio.simul %>% 
     mutate(asset = paste(asset, 'USDT', sep = ''))
 
     asset.price <- lapply(portfolio.simul.usd$asset, function(x) binance_klines(
-        x, interval = '1d', limit = 365))
+        x, interval = '1d', limit = int))
 
     close.price <- lapply(asset.price, function(x) pull(x,close))
 
@@ -40,7 +41,7 @@ get_volror <- function(){
 
     daily_returns <- lapply(close.price, function(x) diff(x)/lag(x))
     mean_returns <- lapply(daily_returns, function(x) mean(x, na.rm = TRUE))
-    my_vol <- lapply(daily_returns, function(x) round((sd(x, na.rm = TRUE) * sqrt(365) * 100), digits = 2))
+    my_vol <- lapply(daily_returns, function(x) round((sd(x, na.rm = TRUE) * sqrt(int) * 100), digits = 2))
     names(my_vol) <- portfolio.simul$asset
     volat <- enframe(my_vol, name = 'asset', value = 'Volatility')
     volat$Volatility <- unlist(volat$Volatility)
