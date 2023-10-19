@@ -19,7 +19,7 @@ mlc_portfolio <- get_return()
 insight::export_table(mlc_portfolio, format = 'html')
 ## END ##
 
-vol_ror <- get_volror()
+vol_ror <- get_volror(100)
 
 # ! HINT !
 # set_names(c("foo", "bar")) |> purr::map_chr(paste0, ":suffix")
