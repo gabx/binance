@@ -24,11 +24,14 @@ my.trades <- Filter(function(x) length(x) > 0, my.trades)
 
 # filter status, keep only needed columns, replace buy and sell by 1 and -1
 transform_function <- function(df) {
-    # return(filter(df, status == 'FILLED'))
     df <- filter(df, status == 'FILLED')
     df <- select(df, symbol, price, executed_qty, cummulative_quote_qty, side, time)
-    df <- df |> mutate(side = as.numeric(ifelse(side == 'BUY', 1, ifelse(side == 'SELL', -1, side))))
-    df <- df |> mutate(cummulative_quote_qty = cummulative_quote_qty * side)
+    #df <- df |> mutate(executed_qty = ifelse(side == 'BUY', executed_qty, ifelse(side == 'SELL', executed_qty * -1, executed_qty)))
+    # df <- df |> mutate(executed_qty = if_else(side == 'BUY', executed_qty, executed_qty * -1),
+                       # cummulative_quote_qty = if_else(side == 'BUY', cummulative_quote_qty, cummulative_quote_qty * -1))
+    # df <- df |> mutate(side = as.numeric(ifelse(side == 'BUY', 1, ifelse(side == 'SELL', -1, side))))
+    # df <- df |> mutate(side = if_else(side == 'BUY', 1, -1))
+    # df <- df |> mutate(cummulative_quote_qty = cummulative_quote_qty * side)
     # df <- df |> select(symbol, executed_qty, cummulative_quote_qty)
 }
 
@@ -36,9 +39,21 @@ transform_function <- function(df) {
 my.trades.transformed <- lapply(my.trades, function(lst) {
          lapply(lst, transform_function)
     })
+
+        
 # convert our list of df to one tbl
 my.trades.week <- as_tibble(my.trades.transformed |> bind_rows())
+
+results <- numeric(nrow(my.trades.week))
+for (i in 1:nrow(my.trades.week)) {
+    if (i > 1 && my.trades.week$side[i] == 'SELL') {
+        results[i] <- my.trades.week$cummulative_quote_qty[i] - my.trades.week$cummulative_quote_qty[i - 1]
+    } else {
+        results[i] <- NA  # Set NA for rows with 'BUY' or the first row
+    }
+}
+
 my.trades.week <- my.trades.week |> select(symbol, executed_qty, cummulative_quote_qty)
 my.trades.week <- my.trades.week |> rename(asset = symbol, amount = executed_qty, total = cummulative_quote_qty)
 
-
+aggregate(. ~ asset, data = my.trades.week, FUN = sum)
