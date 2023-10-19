@@ -2,8 +2,8 @@
 
 get_volror <- function(int){
     
-    # x is a number of days
-    portfolio.simul <- read_csv("simul1.csv", col_names = 'asset', show_col_types = FALSE)
+    # int is a number of days
+    portfolio.simul <- read_csv("simul_small.csv", col_names = 'asset', show_col_types = FALSE)
     portfolio.simul.usd <- portfolio.simul %>% 
     mutate(asset = paste(asset, 'USDT', sep = ''))
 
