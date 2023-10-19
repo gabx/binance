@@ -1,23 +1,27 @@
 # compute volatility, performance and visualize it on a chart
 # assets are in a list mlc_asset
 
+# set the dates
+start_time  <- format(Sys.Date()-30, "%Y-%m-%d")
+end_time <- format(Sys.Date()-1, "%Y-%m-%d")
+
+
 # our list of token
 balance <- get_balance()
 mlc.asset <- balance$asset
 mlc.asset <- as.list(paste(mlc.asset, 'USDT', sep = ''))
 mlc.asset <- mlc.asset[mlc.asset != 'USDTUSDT']
 
-## 1 compute rate of return for 2 weeks and 2 months
-ror_3months <- function(x) {                 
-x.close <- as_tibble(binance_klines(x, interval = '8h', start_time = '2023-04-11', end_time = '2023-07-11'))
-x.close <- select(x.close, open_time, open)
-x.close <- filter(x.close, grepl('18:00:00', open_time))
-ror.3months <- (x.close$open[90]-x.close$open[1])/x.close$open[1]
-ror.3months <- round(ror.3months * 100, digits = 2)
+## 1 compute rate of return for 30 days and 60 days
+ror_30days <- function(x) {                 
+
+    start.value <- filter(df, grepl(start_time, df$open_time, ignore.case = TRUE))[[2]]
+    end.value <- filter(df, grepl(start_time, df$open_time, ignore.case = TRUE))[[2]]
+    ror.3months <- round(((end.value - start.value)/ start.value)* 100, digits = 2)
 
 }
 
-ror_3weeks <- function(x) {
+ror_60days <- function(x) {
 x.close <- as_tibble(binance_klines(x, interval = '8h', start_time = '2023-06-11', end_time = '2023-07-11'))
 x.close <- select(x.close, open_time, open)
 x.close <- filter(x.close, grepl('18:00:00', open_time))
