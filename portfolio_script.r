@@ -6,6 +6,7 @@ source('get_historic.r')
 source('get_portfolio.r')
 source('get_return.r')
 source('get_volror.r')
+source('get_stat.r')
 
 # create a new env to save our data
 .PortfolioEnv <- new.env()
@@ -15,8 +16,11 @@ mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
+asset.all.stats <- get_stat()
+
 # nice view and print to html or pdf
 insight::export_table(mlc_portfolio, format = 'html')
+insight::export_table(asset.all.stats, format = 'html')
 ## END ##
 
 vol_ror <- get_volror(100)
