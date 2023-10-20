@@ -31,8 +31,11 @@ to_xts <- function(df) {
 asset.xts.lst <- lapply(asset.price.close, to_xts)
 names(asset.xts.lst) <- portfolio.simul.usd$asset
 
-# list of daily returns
+# list of daily returns in xts format
 asset.return.lst <- lapply(asset.xts.lst, Return.calculate)
+# create a xts object with all returns and asset names as colnames
+asset.return.xts <- na.omit(do.call(merge, asset.return.lst))
+assign('asset.return.xts', asset.return.xts, envir = .GlobalEnv)
 
 # Create our final tibble asset.stats
 # 1 - Return.calculate : price to return to return.annualized
@@ -63,6 +66,12 @@ asset.semidev <- as_tibble_col(asset.semidev, column_name = 'Semi_deviation')
 # 6 maxdrawdown
 asset.maxdd <- round(sapply(asset.return.lst, maxDrawdown) * 100, digits = 2)
 asset.maxdd <- as_tibble_col(asset.maxdd, column_name = 'max_drawdown')
+# OR Average drawdown + average recovery period
+asset.avgdd <- round(sapply(asset.return.lst, AverageDrawdown) * 100, digits = 2)
+asset.avgdd <- as_tibble_col(asset.avgdd, column_name = 'Average_drawdown')
+asset.avgrec <- round(sapply(asset.return.lst, AverageRecovery), digits = 2)
+asset.avgrec <- as_tibble_col(asset.avgrec, column_name = 'Average_recovery')
+
 
 # 7 VAR
 # More efficient estimates of VaR are obtained if a (correct) assumption
@@ -76,11 +85,14 @@ asset.es <- round(sapply(asset.return.lst, ETL, method = 'historical') * 100, di
 asset.es <- as_tibble_col(asset.es, column_name = 'Expected_shortfall')
 
 # bind all
-asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.maxdd, asset.var, asset.es)
+asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.maxdd, asset.var)
+# asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.avgdd, asset.avgrec, asset.var)
 }
 
 #  table of various risk ratios
 # table.DownsideRisk(asset.return.lst[[7]]) 
-
-
+# chart with daily return and modified var, HistoricalES, HistoricalVaR
+# chart.BarVaR(asset.return.lst[[6]], methods = 'ModifiedVaR')
+# chart.Histogram(asset.return.lst[[3]], methods = 'add.normal')  histogram of returns and see if normal distribution
+# chart.RiskReturnScatter() A wrapper to create a scatter chart of annualized returns versus annualized risk (standard deviation)
 
