@@ -8,6 +8,7 @@ get_stat <- function() {
 library(xts)
 library(PerformanceAnalytics)
 library(binancer)
+library(corrplot)
 
 portfolio.simul <- read_csv("simul_small.csv", col_names = 'asset', show_col_types = FALSE)
 portfolio.simul.usd <- portfolio.simul %>% 
@@ -41,25 +42,35 @@ assign('asset.return.xts', asset.return.xts, envir = .GlobalEnv)
 # 1 - Return.calculate : price to return to return.annualized
 asset.return <- round(sapply(asset.return.lst, Return.annualized) * 100, digits = 2)
 asset.stats <- as_tibble_col(asset.return, column_name = 'Annualized_return')
-asset.stats <- rownames_to_column(asset.stats, var = 'Assets')
-asset.stats$Assets <- names(asset.xts.lst)
+asset.stats <- rownames_to_column(asset.stats, var = 'asset')
+asset.stats$asset <- names(asset.xts.lst)
 
 # 2 - annualized standard deviation
 asset.stddev <- round(sapply(asset.return.lst, StdDev.annualized) * 100, digits = 2)
-asset.stddev <- as_tibble_col(unlist(asset.stddev), column_name = 'Annualized_volatility')
+asset.stddev <- as_tibble_col(asset.stddev, column_name = 'Annualized_volatility')
 
 # 3 - annualized sharpe ratio
 asset.sharpe <- round(sapply(asset.return.lst, SharpeRatio.annualized, scale = 365), digits = 2)
-asset.sharpe <- as_tibble_col(unlist(asset.sharpe), column_name = 'Annualized_sharpe')
+# asset.sharpe <- as_tibble_col(unlist(asset.sharpe), column_name = 'Annualized_sharpe')
+asset.sharpe <- as_tibble_col(asset.sharpe, column_name = 'Annualized_sharpe')
+
+# 4 Kurtosis
+# > 3  heavier tails and a higher peak 
+# < 3 lighter tails and a flatter peak
+asset.kurtosis <- round(sapply(asset.return.lst, PerformanceAnalytics::kurtosis), digits = 2)
+asset.kurtosis <- as_tibble_col(asset.kurtosis, column_name = 'Kurtosis')
 
 # 4 - skewness Positive skewness indicates that more of the returns are positive, negative skewness indicates that
 # more of the returns are negative
-# asset.skewness <- sapply(asset.return.lst, PerformanceAnalytics::skewness)
-# asset.skewness <- as_tibble_col(asset.skewness, column_name = 'Skewness')
+asset.skewness <- round(sapply(asset.return.lst, PerformanceAnalytics::skewness), digits = 2)
+asset.skewness <- as_tibble_col(asset.skewness, column_name = 'Skewness')
 
 # 5 - semivariance, semideviation ??
 # SemiDeviation and SemiVariance are implemented as a
 # wrapper of DownsideDeviation with MAR=mean(R)
+# Downside deviation, similar to semi deviation, eliminates positive returns when calculating risk.
+# Instead of using the mean return or zero, it uses the Minimum Acceptable Return as proposed by
+# Sharpe (which may be the mean historical return or zero)
 asset.semidev <- round(sapply(asset.return.lst, SemiDeviation) * 100, digits = 2)
 asset.semidev <- as_tibble_col(asset.semidev, column_name = 'Semi_deviation')
 
@@ -85,14 +96,25 @@ asset.es <- round(sapply(asset.return.lst, ETL, method = 'historical') * 100, di
 asset.es <- as_tibble_col(asset.es, column_name = 'Expected_shortfall')
 
 # bind all
-asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.maxdd, asset.var)
+asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.kurtosis, asset.skewness,
+                             asset.sharpe, asset.semidev, asset.maxdd, asset.var)
 # asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.avgdd, asset.avgrec, asset.var)
+
+# remove USDT from 1st column
+asset.all.stats <- asset.all.stats %>% mutate(asset = gsub('USDT', '', asset))
 }
 
+# corrplot::corrplot(cor(asset.return.xts)): matrice de correlation
 #  table of various risk ratios
 # table.DownsideRisk(asset.return.lst[[7]]) 
+# table.Drawdowns(asset.return.xts$MKRUSDT)
 # chart with daily return and modified var, HistoricalES, HistoricalVaR
 # chart.BarVaR(asset.return.lst[[6]], methods = 'ModifiedVaR')
 # chart.Histogram(asset.return.lst[[3]], methods = 'add.normal')  histogram of returns and see if normal distribution
-# chart.RiskReturnScatter() A wrapper to create a scatter chart of annualized returns versus annualized risk (standard deviation)
+# chart.RiskReturnScatter(asset.return.xts, scale = 365) A wrapper to create a scatter chart of annualized returns versus annualized risk (standard deviation)
+# corr <- cor(asset.return.xts)
+# corrplot(corr, method = 'number')
+# corrplot(corr, type = 'upper', method = 'number')
+# table.Arbitrary(asset.return.xts$BTCUSDT,metrics=c("VaR", 'mean'), metricsNames=c("modVaR","mean"),p=.95) we can pass any wanted metrics
+
 
