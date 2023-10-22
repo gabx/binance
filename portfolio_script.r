@@ -18,7 +18,9 @@ open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
 asset.all.stats <- get_stat()
-my.journal <- get_journal()
+my.journal <- get_journal(number_of_days = 10)
+
+
 # nice view and print to html or pdf
 insight::export_table(mlc_portfolio, format = 'html')
 insight::export_table(asset.all.stats, format = 'html')
