@@ -7,6 +7,7 @@ source('get_portfolio.r')
 source('get_return.r')
 source('get_volror.r')
 source('get_stat.r')
+source('get_journal.r')
 
 # create a new env to save our data
 .PortfolioEnv <- new.env()
@@ -17,7 +18,7 @@ open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
 asset.all.stats <- get_stat()
-
+my.journal <- get_journal()
 # nice view and print to html or pdf
 insight::export_table(mlc_portfolio, format = 'html')
 insight::export_table(asset.all.stats, format = 'html')
