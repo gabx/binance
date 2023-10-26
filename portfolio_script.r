@@ -17,7 +17,8 @@ mlc <- get_balance()
 open.price <- get_historic()
 portfolio <- get_portfolio()
 mlc_portfolio <- get_return()
-asset.all.stats <- get_stat()
+asset.price.xts <- get_quotes('1w')
+asset.all.stats <- get_stat('1w')
 my.journal <- get_journal(number_of_days = 10)
 
 
@@ -25,6 +26,7 @@ my.journal <- get_journal(number_of_days = 10)
 insight::export_table(mlc_portfolio, format = 'html')
 insight::export_table(asset.all.stats, format = 'html')
 ## END ##
+corrplot::corrplot(cor(asset.return.xts)) # matrice de correlation
 
 vol_ror <- get_volror(100)
 
@@ -40,7 +42,7 @@ vol_ror <- get_volror(100)
 # export to pdf
 library(gridExtra)
 pdf('portoflio.pdf')
-grid.table(test)
+grid.table(portfolio)
 dev.off()
 
 my.color <- c('#EE8EBF','#25801f','#f73905','#78C66E','#3D5D78','#D58C50',
