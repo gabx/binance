@@ -10,6 +10,7 @@ get_quotes <- function(p) {
     library(PerformanceAnalytics)
     library(binancer)
     
+    # TO DO: pass simul.csv as argument
     # return a xts object of returns on a specific period
     portfolio.simul <- read_csv("simul.csv", col_names = 'asset', show_col_types = FALSE)
     portfolio.simul.usd <- portfolio.simul %>% 
@@ -25,7 +26,7 @@ get_quotes <- function(p) {
     to_xts <- function(df) {
     xts::xts(x = df$close, order.by = as.Date(df$close_time))
     }
-    asset.xts.lst <- lapply(asset.price.close, to_xts)
+    asset.price.xts <- lapply(asset.price.close, to_xts)
 }
 
 get_stat <- function(p) {
@@ -34,11 +35,11 @@ get_stat <- function(p) {
     library(PerformanceAnalytics)
     library(corrplot)
     
-    asset.xts.lst <- get_quotes(p)
-    assign('asset.xts.lst',asset.xts.lst, envir = .GlobalEnv)
-    asset.return.lst <- lapply(asset.xts.lst, Return.calculate)
+    asset.price.xts <- get_quotes(p)
+    assign('asset.price.xts',asset.price.xts, envir = .GlobalEnv)
+    asset.return.lst <- lapply(asset.price.xts, Return.calculate)
     asset.return.xts <- do.call(merge, asset.return.lst)
-
+    assign('asset.return.xts',asset.return.xts, envir = .GlobalEnv)
 # Create our final tibble asset.stats
 # 1 - Return.calculate : price to return to return.annualized
     asset.return <- round(sapply(asset.return.xts, Return.annualized) * 100, digits = 2)
@@ -106,7 +107,7 @@ get_stat <- function(p) {
 }
 
 
-# corrplot::corrplot(cor(asset.return.xts)): matrice de correlation
+
 #  table of various risk ratios
 # table.DownsideRisk(asset.return.lst[[7]]) 
 # table.Drawdowns(asset.return.xts$MKRUSDT)
@@ -119,11 +120,5 @@ get_stat <- function(p) {
 # corrplot(corr, type = 'upper', method = 'number')
 # table.Arbitrary(asset.return.xts$BTCUSDT,metrics=c("VaR", 'mean'), metricsNames=c("modVaR","mean"),p=.95) we can pass any wanted metrics
 
-# 6J3CK1QKBS9GJGDU1CSZ6D5Q
 
-provide <- function(f, provision) {
-    environment(f) <-
-        list2env(provision, parent = environment(f))
-    f
-}
 
