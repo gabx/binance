@@ -21,3 +21,5 @@ get_historic <- function() {
     # change df into tibbles
     open.price <- map(asset.price.open, as_tibble)
 }
+
+
