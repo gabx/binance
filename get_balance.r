@@ -22,8 +22,7 @@ get_balance <- function () {
     balance <- bind_rows(bin.balance, safe.balance) %>%
         group_by(asset) %>%
         summarise(total = sum(total))
-    mlc.asset <- as.list(balance$asset)
-    
+
 # remove USDT form our assets & add USDT to each asset name
     mlc.asset <- mlc.asset[-which(mlc.asset == 'USDT')]
     mlc.asset.usdt <- as.list(paste(mlc.asset, 'USDT', sep = ''))
