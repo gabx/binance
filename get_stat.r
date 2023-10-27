@@ -45,7 +45,7 @@ get_stat <- function(p) {
     asset.return <- round(sapply(asset.return.xts, Return.annualized) * 100, digits = 2)
     asset.stats <- as_tibble_col(asset.return, column_name = 'Annualized_return')
     asset.stats <- rownames_to_column(asset.stats, var = 'asset')
-    asset.stats$asset <- names(asset.xts.lst)
+    asset.stats$asset <- names(asset.price.xts)
 
 # 2 - annualized standard deviation
     asset.stddev <- round(sapply(asset.return.xts, StdDev.annualized) * 100, digits = 2)
@@ -104,8 +104,25 @@ get_stat <- function(p) {
 
 # remove USDT from 1st column
     asset.all.stats <- asset.all.stats %>% mutate(asset = gsub('USDT', '', asset))
+    
+    # at a average line below
+    average.row <- asset.all.stats |>
+        select_if(is.numeric) |>
+        summarise(across(everything(), ~mean(., na.rm = TRUE)))
+    asset <- c('AVERAGE')
+    average.row <- add_column(asset, .before = 1, .data = average.row)
+    asset.all.stats <- bind_rows(asset.all.stats, average.row)
 }
 
+get_correl <- function() {
+    
+    # we need to remove all NA to compare our various assets
+    list.length <- sapply(asset.price.xts, length)
+    length.shortest <- min(list.length)
+    row.number <- nrow(asset.return.xts) - length.shortest +2
+    asset.return.no_na.xts <- asset.return.xts[row.number:nrow(asset.return.xts), ]
+    assign('asset.return.no_na.xts',asset.return.no_na.xts, envir = .GlobalEnv)
+}
 
 
 #  table of various risk ratios
