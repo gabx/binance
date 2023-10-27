@@ -38,8 +38,13 @@ get_stat <- function(p, s) {
     asset.price.xts <- get_quotes(p)
     assign('asset.price.xts',asset.price.xts, envir = .GlobalEnv)
     asset.return.lst <- lapply(asset.price.xts, Return.calculate)
-    asset.return.xts <- do.call(merge, asset.return.lst)
+    # we need to remove all NA to compare our various assets
+    list.length <- sapply(asset.price.xts, length)
+    length.shortest <- min(list.length)
+    row.number <- nrow(asset.return.xts) - length.shortest +2
+    asset.return.xts <- asset.return.xts[row.number:nrow(asset.return.xts), ]
     assign('asset.return.xts',asset.return.xts, envir = .GlobalEnv)
+    
 # Create our final tibble asset.stats
 # 1 - Return.calculate : price to return to return.annualized
     asset.return <- round(sapply(asset.return.xts, Return.annualized) * 100, digits = 2)
@@ -114,28 +119,18 @@ get_stat <- function(p, s) {
     asset.all.stats <- bind_rows(asset.all.stats, average.row)
 }
 
-get_correl <- function() {
-    
-    # we need to remove all NA to compare our various assets
-    list.length <- sapply(asset.price.xts, length)
-    length.shortest <- min(list.length)
-    row.number <- nrow(asset.return.xts) - length.shortest +2
-    asset.return.no_na.xts <- asset.return.xts[row.number:nrow(asset.return.xts), ]
-    assign('asset.return.no_na.xts',asset.return.no_na.xts, envir = .GlobalEnv)
-}
-
 
 #  table of various risk ratios
 # table.DownsideRisk(asset.return.lst[[7]]) 
-# table.Drawdowns(asset.return.xts$MKRUSDT)
+# table.Drawdowns(asset.return.no_na.xts$MKRUSDT)
 # chart with daily return and modified var, HistoricalES, HistoricalVaR
 # chart.BarVaR(asset.return.lst[[6]], methods = 'ModifiedVaR')
 # chart.Histogram(asset.return.lst[[3]], methods = 'add.normal')  histogram of returns and see if normal distribution
-# chart.RiskReturnScatter(asset.return.xts, scale = 365) A wrapper to create a scatter chart of annualized returns versus annualized risk (standard deviation)
-# corr <- cor(asset.return.xts)
+# chart.RiskReturnScatter(asset.return.no_na.xts, scale = 365) A wrapper to create a scatter chart of annualized returns versus annualized risk (standard deviation)
+# corr <- cor(asset.return.no_na.xts)
 # corrplot(corr, method = 'number')
 # corrplot(corr, type = 'upper', method = 'number')
-# table.Arbitrary(asset.return.xts$BTCUSDT,metrics=c("VaR", 'mean'), metricsNames=c("modVaR","mean"),p=.95) we can pass any wanted metrics
+# table.Arbitrary(asset.return.no_na.xts$BTCUSDT,metrics=c("VaR", 'mean'), metricsNames=c("modVaR","mean"),p=.95) we can pass any wanted metrics
 
 
 
