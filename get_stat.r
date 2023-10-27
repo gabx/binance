@@ -29,7 +29,7 @@ get_quotes <- function(p) {
     asset.price.xts <- lapply(asset.price.close, to_xts)
 }
 
-get_stat <- function(p) {
+get_stat <- function(p, s) {
 
     library(xts)
     library(PerformanceAnalytics)
@@ -52,7 +52,7 @@ get_stat <- function(p) {
     asset.stddev <- as_tibble_col(asset.stddev, column_name = 'Annualized_volatility')
 
 # 3 - annualized sharpe ratio
-    asset.sharpe <- round(sapply(asset.return.xts, SharpeRatio.annualized, scale = 365), digits = 2)
+    asset.sharpe <- round(sapply(asset.return.xts, SharpeRatio.annualized, scale = s), digits = 2)
 # asset.sharpe <- as_tibble_col(unlist(asset.sharpe), column_name = 'Annualized_sharpe')
     asset.sharpe <- as_tibble_col(asset.sharpe, column_name = 'Annualized_sharpe')
 
