@@ -24,7 +24,7 @@ get_quotes <- function(p) {
     names(asset.price.close) <- portfolio.simul.usd$asset
     assign('asset.price.close', asset.price.close, envir = .GlobalEnv)
     to_xts <- function(df) {
-    xts::xts(x = df$close, order.by = as.Date(df$close_time))
+    xts::xts(x = df$close, as.Date(df$close_time))
     }
     asset.price.xts <- lapply(asset.price.close, to_xts)
 }
