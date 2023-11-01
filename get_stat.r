@@ -6,7 +6,6 @@
 
 get_quotes <- function(p) {
     
-    library(xts)
     library(PerformanceAnalytics)
     library(binancer)
     
@@ -31,7 +30,6 @@ get_quotes <- function(p) {
 
 get_stat <- function(p, s) {
 
-    library(xts)
     library(PerformanceAnalytics)
     library(corrplot)
     
