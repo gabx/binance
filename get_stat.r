@@ -4,7 +4,7 @@
 # dates represented in row. xts convenient with PerformanceAnalytics package
 
 
-get_stat <- function(interval, s) {
+get_stat <- function(interval, scale) {
 
     library(PerformanceAnalytics)
     library(corrplot)
@@ -33,7 +33,7 @@ get_stat <- function(interval, s) {
     asset.stddev <- as_tibble_col(asset.stddev, column_name = 'Annualized_volatility')
 
 # 3 - annualized sharpe ratio
-    asset.sharpe <- round(sapply(asset.return.xts, SharpeRatio.annualized, scale = s), digits = 2)
+    asset.sharpe <- round(sapply(asset.return.xts, SharpeRatio.annualized, scale = scale), digits = 2)
 # asset.sharpe <- as_tibble_col(unlist(asset.sharpe), column_name = 'Annualized_sharpe')
     asset.sharpe <- as_tibble_col(asset.sharpe, column_name = 'Annualized_sharpe')
 
