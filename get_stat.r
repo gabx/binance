@@ -12,7 +12,9 @@ get_stat <- function(interval, s) {
     asset.price.xts <- get_quotes('1d', 'simul_large.csv')
     assign('asset.price.xts',asset.price.xts, envir = .GlobalEnv)
     asset.return.lst <- lapply(asset.price.xts, Return.calculate)
-    # we need to remove all NA to compare our various assets
+    asset.return.xts <- do.call(merge, asset.return.lst)
+    # we need to remove all NA and take the shortest number of observation 
+    # to compare our various assets
     list.length <- sapply(asset.price.xts, length)
     length.shortest <- min(list.length)
     row.number <- nrow(asset.return.xts) - length.shortest +2
