@@ -4,12 +4,12 @@
 # dates represented in row. xts convenient with PerformanceAnalytics package
 
 
-get_stat <- function(interval, scale) {
+get_stat <- function(interval, csv, scale) {
 
     library(PerformanceAnalytics)
     library(corrplot)
     
-    asset.price.xts <- get_quotes('1d', 'simul_large.csv')
+    asset.price.xts <- get_quotes(interval, csv)
     assign('asset.price.xts',asset.price.xts, envir = .GlobalEnv)
     asset.return.lst <- lapply(asset.price.xts, Return.calculate)
     asset.return.xts <- do.call(merge, asset.return.lst)
@@ -80,7 +80,7 @@ get_stat <- function(interval, scale) {
 
 # bind all
     asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.kurtosis, asset.skewness,
-                             asset.sharpe, asset.maxdd, asset.var)
+                             asset.sharpe, asset.var)
 # asset.all.stats <- bind_cols(asset.stats, asset.stddev, asset.sharpe, asset.semidev, asset.avgdd, asset.avgrec, asset.var)
 
 # remove USDT from 1st column
